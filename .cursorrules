@@ -1,0 +1,415 @@
+# CURSOR RULES - SCREAMING ARCHITECTURE ORIENTADA A MÓDULOS
+
+==================================================
+REGLA PRINCIPAL – SCREAMING ARCHITECTURE
+==================================================
+
+La estructura del proyecto debe gritar QUÉ HACE la aplicación, no QUÉ TECNOLOGÍA usa.
+
+- Las carpetas principales representan módulos de negocio / dominios funcionales.
+- Está prohibido organizar el proyecto por capas técnicas en la raíz (components, hooks, services, etc).
+- Toda lógica, UI y estado deben vivir dentro de su módulo correspondiente.
+
+==================================================
+ESTRUCTURA BASE OBLIGATORIA
+==================================================
+
+src/
+├── assets/
+│   └── (imágenes, fuentes, iconos globales)
+│
+├── modules/
+│   ├── core/
+│   │   ├── components/
+│   │   │   └── design-system/
+│   │   ├── hooks/
+│   │   ├── lib/
+│   │   ├── utils/
+│   │   └── constants/
+│   │
+│   └── <module-name>/
+│       ├── components/
+│       ├── hooks/
+│       ├── services/
+│       ├── states/
+│       ├── utils/
+│       ├── constants/
+│       └── lib/
+
+==================================================
+DEFINICIÓN DE CADA CARPETA
+==================================================
+
+## components/
+Componentes visuales del módulo. No contienen lógica de negocio compleja.
+- Componentes de presentación
+- Componentes de UI específicos del dominio
+- NO deben contener lógica de negocio pesada
+
+## hooks/
+Hooks específicos del módulo. Encapsulan lógica reutilizable del dominio.
+- Custom hooks que encapsulan lógica del módulo
+- Hooks que manejan estado o efectos específicos del dominio
+- Nomenclatura: useXxx.js o useXxx.jsx
+
+## services/
+Acceso a APIs, SDKs, adaptadores externos o lógica de infraestructura.
+- Clientes HTTP/API
+- Integraciones con servicios externos
+- Adaptadores de datos
+- Nomenclatura: X.service.js o X.api.js
+
+## states/
+Manejo de estado del módulo (stores, reducers, atoms, etc).
+- Stores de Zustand, Redux, Jotai, etc.
+- Reducers y contextos específicos del módulo
+- Estado global del módulo
+- Nomenclatura: X.store.js, X.reducer.js, X.context.jsx
+
+## utils/
+Funciones auxiliares SOLO si son específicas del módulo.
+- Helpers que solo tienen sentido dentro del módulo
+- Transformaciones de datos del dominio
+- Validaciones específicas del módulo
+- Nomenclatura: X.js o X.utils.js
+
+## constants/
+Constantes del dominio:
+- enums
+- configuraciones del módulo
+- textos fijos
+- keys
+- mappings
+- Nomenclatura: X.js o X.constants.js
+
+## lib/
+Lógica de negocio pura, helpers complejos o reglas del dominio.
+- Reglas de negocio complejas
+- Algoritmos específicos del dominio
+- Lógica de cálculo o procesamiento
+- Nomenclatura: X.js o X.lib.js
+
+==================================================
+CORE MODULE
+==================================================
+
+El módulo `core` es especial:
+- Contiene el design system
+- Componentes UI reutilizables y agnósticos al dominio
+- Hooks genéricos (useDebounce, useLocalStorage, etc.)
+- Utilidades globales (formatters, validators genéricos)
+- Constantes compartidas (rutas, configuraciones globales)
+
+**RESTRICCIÓN CRÍTICA:**
+- Nada dentro de `core` puede depender de otros módulos.
+- `core` solo puede depender de librerías externas y de sí mismo.
+
+Ejemplos de lo que VA en core:
+- src/modules/core/components/design-system/Button.jsx
+- src/modules/core/components/design-system/Input.jsx
+- src/modules/core/hooks/useDebounce.js
+- src/modules/core/utils/formatCurrency.js
+- src/modules/core/constants/routes.js
+
+Ejemplos de lo que NO VA en core:
+- Componentes que muestran datos de activos financieros
+- Hooks que calculan TNA de activos
+- Servicios que llaman a APIs de trading
+
+==================================================
+REGLAS DE CREACIÓN AUTOMÁTICA (MUY IMPORTANTE)
+==================================================
+
+Cuando el usuario solicite crear algo, Cursor DEBE ubicarlo así:
+
+### Componentes
+- "crear un componente X del módulo Y"
+  → src/modules/Y/components/X.jsx
+
+- "crear componente de tabla de activos"
+  → src/modules/assets/components/AssetsTable.jsx
+
+### Hooks
+- "crear un hook X del módulo Y"
+  → src/modules/Y/hooks/useX.js
+
+- "crear hook para calcular TNA"
+  → src/modules/assets/hooks/useCalculateTNA.js
+
+### Servicios
+- "crear un servicio X del módulo Y"
+  → src/modules/Y/services/X.service.js
+
+- "crear servicio para obtener activos"
+  → src/modules/assets/services/assets.service.js
+
+### Constantes
+- "crear una constante X del módulo Y"
+  → src/modules/Y/constants/X.js
+
+- "crear constantes de tipos de activos"
+  → src/modules/assets/constants/assetTypes.js
+
+### Estados/Stores
+- "crear estado/store X del módulo Y"
+  → src/modules/Y/states/X.store.js
+
+- "crear store de activos"
+  → src/modules/assets/states/assets.store.js
+
+### Utilidades
+- "crear util X del módulo Y"
+  → src/modules/Y/utils/X.js
+
+- "crear util para formatear precios de activos"
+  → src/modules/assets/utils/formatAssetPrice.js
+
+### Si el módulo no existe:
+1. **ADVERTIR EXPLÍCITAMENTE** al usuario que el módulo no existe
+2. **PREGUNTAR** si desea crear el módulo o usar uno existente
+3. Si el usuario confirma, crear la carpeta del módulo con su estructura base completa:
+   ```
+   src/modules/<module-name>/
+   ├── components/
+   ├── hooks/
+   ├── services/
+   ├── states/
+   ├── utils/
+   ├── constants/
+   └── lib/
+   ```
+
+==================================================
+REGLAS DE IMPORTACIÓN
+==================================================
+
+### Regla de Aislamiento de Módulos
+- Un módulo NO puede importar archivos internos de otro módulo directamente.
+- Solo se permiten imports entre módulos mediante:
+  - Exports públicos (archivos index.js o index.jsx)
+  - APIs explícitas y documentadas
+
+### Ejemplo CORRECTO:
+```javascript
+// src/modules/assets/components/AssetsTable.jsx
+import { Button } from '@/modules/core/components/design-system/Button'
+import { useDebounce } from '@/modules/core/hooks/useDebounce'
+```
+
+### Ejemplo INCORRECTO:
+```javascript
+// ❌ NO HACER ESTO
+import { calculateTNA } from '@/modules/assets/utils/calculateTNA' // desde otro módulo
+import { AssetsTable } from '@/modules/assets/components/AssetsTable' // desde otro módulo
+```
+
+### Evitar Imports Relativos Profundos
+- Preferir alias de path (@/modules/...) sobre rutas relativas (../../..)
+- Configurar alias en vite.config.js
+
+### Ejemplo de Alias Recomendado:
+```javascript
+// vite.config.js
+resolve: {
+  alias: {
+    '@': path.resolve(__dirname, './src'),
+    '@/modules': path.resolve(__dirname, './src/modules')
+  }
+}
+```
+
+==================================================
+RESTRICCIONES ESTRICTAS
+==================================================
+
+### Prohibiciones Absolutas
+
+1. **Prohibido crear carpetas genéricas en src/**
+   - ❌ src/components/
+   - ❌ src/hooks/
+   - ❌ src/services/
+   - ❌ src/utils/
+   - ❌ src/stores/
+   - ✅ src/modules/<module-name>/components/
+
+2. **Prohibido crear lógica de negocio en componentes visuales**
+   - Los componentes deben ser "tontos" (presentational)
+   - La lógica va en hooks, services, lib o states
+
+3. **Prohibido duplicar lógica entre módulos**
+   - Si dos módulos necesitan la misma lógica, debe ir en `core`
+   - Si es específica del dominio, evaluar si los módulos deben fusionarse
+
+4. **Prohibido importar desde otros módulos sin API pública**
+   - No importar archivos internos de otros módulos
+   - Usar exports públicos o índices
+
+5. **Prohibido crear archivos fuera de módulos**
+   - Todo código debe vivir dentro de un módulo
+   - La única excepción es App.jsx y main.jsx en src/
+
+==================================================
+EJEMPLOS DE ESTRUCTURA CORRECTA
+==================================================
+
+### Ejemplo: Módulo de Activos Financieros
+
+```
+src/modules/assets/
+├── components/
+│   ├── AssetsTable.jsx
+│   ├── AssetCard.jsx
+│   └── AssetDetail.jsx
+├── hooks/
+│   ├── useAssets.js
+│   ├── useCalculateTNA.js
+│   └── useAssetFilters.js
+├── services/
+│   ├── assets.service.js
+│   └── assets.api.js
+├── states/
+│   ├── assets.store.js
+│   └── assets.context.jsx
+├── utils/
+│   ├── formatAssetPrice.js
+│   └── calculateReturns.js
+├── constants/
+│   ├── assetTypes.js
+│   ├── assetStatus.js
+│   └── assetColumns.js
+└── lib/
+    ├── assetValidator.js
+    └── portfolioCalculator.js
+```
+
+### Ejemplo: Módulo de Usuarios
+
+```
+src/modules/users/
+├── components/
+│   ├── UserProfile.jsx
+│   └── UserList.jsx
+├── hooks/
+│   ├── useUser.js
+│   └── useUserPermissions.js
+├── services/
+│   └── users.service.js
+├── states/
+│   └── user.store.js
+├── utils/
+│   └── formatUserName.js
+├── constants/
+│   └── userRoles.js
+└── lib/
+    └── userValidator.js
+```
+
+==================================================
+EJEMPLOS DE ESTRUCTURA INCORRECTA
+==================================================
+
+### ❌ Estructura por Capas Técnicas (PROHIBIDA)
+
+```
+src/
+├── components/          ❌ PROHIBIDO
+│   ├── AssetsTable.jsx
+│   └── UserProfile.jsx
+├── hooks/              ❌ PROHIBIDO
+│   ├── useAssets.js
+│   └── useUser.js
+├── services/            ❌ PROHIBIDO
+│   └── api.js
+└── utils/               ❌ PROHIBIDO
+    └── helpers.js
+```
+
+### ❌ Lógica de Negocio en Componentes (PROHIBIDA)
+
+```javascript
+// ❌ INCORRECTO
+export function AssetsTable() {
+  // Lógica de negocio en el componente
+  const calculateTNA = (asset) => {
+    // ... cálculo complejo
+  }
+  
+  const fetchAssets = async () => {
+    // ... llamada a API
+  }
+  
+  return <Table>...</Table>
+}
+
+// ✅ CORRECTO
+export function AssetsTable() {
+  const { assets, isLoading } = useAssets()
+  const tna = useCalculateTNA(assets)
+  
+  return <Table>...</Table>
+}
+```
+
+### ❌ Imports entre Módulos sin API (PROHIBIDA)
+
+```javascript
+// ❌ INCORRECTO - Importar util interno de otro módulo
+import { calculateTNA } from '@/modules/assets/utils/calculateTNA'
+
+// ✅ CORRECTO - Usar hook o servicio público
+import { useCalculateTNA } from '@/modules/assets/hooks/useCalculateTNA'
+```
+
+==================================================
+RESPONSABILIDAD DE CURSOR
+==================================================
+
+Cursor DEBE:
+
+1. **Respetar estas reglas al crear o refactorizar código**
+   - Verificar que la ubicación del archivo cumple con la arquitectura
+   - Crear la estructura de carpetas si el módulo no existe
+
+2. **Advertir explícitamente si una acción viola esta arquitectura**
+   - Mostrar un mensaje claro explicando por qué no se puede hacer
+   - Sugerir la ubicación correcta
+
+3. **Justificar la ubicación de cada archivo nuevo que genere**
+   - Explicar en qué módulo se crea y por qué
+   - Confirmar que cumple con las reglas de Screaming Architecture
+
+4. **Preguntar antes de crear módulos nuevos**
+   - Si el usuario solicita crear algo en un módulo inexistente
+   - Confirmar el nombre del módulo y su propósito
+
+5. **Refactorizar código existente cuando sea necesario**
+   - Si encuentra código que viola estas reglas, sugerir refactorización
+   - Mover archivos a la estructura correcta
+
+==================================================
+MIGRACIÓN DE CÓDIGO EXISTENTE
+==================================================
+
+Si el proyecto tiene código en estructuras antiguas (ej: src/components/), Cursor debe:
+
+1. Identificar el dominio funcional de cada archivo
+2. Proponer una migración a la estructura de módulos
+3. Crear los módulos necesarios
+4. Mover los archivos manteniendo la funcionalidad
+5. Actualizar todos los imports
+
+Ejemplo de migración:
+- src/components/AssetsTable.jsx → src/modules/assets/components/AssetsTable.jsx
+- src/components/CommonTable.jsx → src/modules/core/components/design-system/CommonTable.jsx
+
+==================================================
+NOTAS FINALES
+==================================================
+
+- Esta arquitectura prioriza la mantenibilidad y escalabilidad
+- Facilita el trabajo en equipo al organizar por dominio
+- Reduce el acoplamiento entre funcionalidades
+- Hace explícitas las dependencias entre módulos
+- Permite evolucionar cada módulo de forma independiente
+
+**RECUERDA:** La estructura debe gritar QUÉ HACE la aplicación, no QUÉ TECNOLOGÍA usa.
