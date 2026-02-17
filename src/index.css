@@ -1,1 +1,41 @@
 @import 'tailwindcss';
+@plugin '../hero.ts';
+
+/* Note: You may need to change the path to fit your project structure */
+@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+@layer theme, base, components, utilities;
+
+@theme {
+    --font-lato: 'Lato', sans-serif;
+    --font-onest: 'Onest', sans-serif;
+
+    /* animations */
+
+    --animate-fade-in: fade-in 0.4s ease-in;
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+body {
+    font-family: var(--font-lato);
+    /* color-scheme: light; */
+}
+
+@theme {
+    --color-primary: #8b85ff;
+    --color-secondary: #1b1b1b;
+}
+
+:root {
+    --heroui-primary: var(--color-primary);
+    --heroui-secondary: var(--color-secondary);
+}
