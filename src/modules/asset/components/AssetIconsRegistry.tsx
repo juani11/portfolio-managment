@@ -10,7 +10,7 @@ import {
     SP500Icon,
     TeslaIcon,
     YPFIcon,
-} from './assetIcons'
+} from './AssetIcons'
 
 export const ASSET_ICON_REGISTRY: Record<
     AssetSymbol,
