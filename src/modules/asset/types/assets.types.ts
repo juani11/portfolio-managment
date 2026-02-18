@@ -12,3 +12,10 @@ export type Asset = {
     name: string
     category: AssetCategory
 }
+
+export interface AssetComposition {
+    asset: Asset
+    amount: number
+    quantity: number
+    percentage: number
+}
