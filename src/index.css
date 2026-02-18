@@ -11,9 +11,8 @@
     --font-lato: 'Lato', sans-serif;
     --font-onest: 'Onest', sans-serif;
 
-    /* animations */
-
-    --animate-fade-in: fade-in 0.4s ease-in;
+    --color-primary: #8b85ff;
+    --color-secondary: #1b1b1b /* animations */ --animate-fade-in: fade-in 0.4s ease-in;
 
     @keyframes fade-in {
         from {
@@ -28,11 +27,6 @@
 body {
     font-family: var(--font-lato);
     /* color-scheme: light; */
-}
-
-@theme {
-    --color-primary: #8b85ff;
-    --color-secondary: #1b1b1b;
 }
 
 :root {
