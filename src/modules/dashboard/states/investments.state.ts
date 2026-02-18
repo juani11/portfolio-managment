@@ -1,15 +1,8 @@
 import { create } from 'zustand'
 
 import { ASSET_METADATA } from '../../asset/constants/assets'
-import type { Asset, AssetSymbol } from '../../asset/types/assets.types'
-
-interface Investment {
-    id: number
-    asset: Asset
-    amount: number
-    quantity: number
-    date: Date
-}
+import type { AssetSymbol } from '../../asset/types/assets.types'
+import type { Investment, InvestmentState } from '../types/investments.types'
 
 const INITIAL_INVESTMENTS = [
     {
@@ -27,12 +20,6 @@ const INITIAL_INVESTMENTS = [
         date: new Date('2025-01-18'),
     },
 ]
-
-interface InvestmentState {
-    investments: Investment[]
-    addInvestment: (inv: Investment) => void
-    removeInvestment: (id: number) => void
-}
 
 export const useInvestmentsStore = create<InvestmentState>((set) => ({
     investments: INITIAL_INVESTMENTS,
