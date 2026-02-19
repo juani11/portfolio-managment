@@ -1,15 +1,16 @@
-import { Button, Card, CardBody, CardHeader } from '@heroui/react'
+import { Button } from '@heroui/react'
 import { useMemo } from 'react'
 
 import { AssetIcon } from '../../asset/components/AssetIcon'
 import { calculateAssetsComposition } from '../../asset/lib/logic'
 import type { AssetComposition } from '../../asset/types/assets.types'
+import Card from '../../core/components/design-system/Card/Card'
 import { BarChartIcon } from '../../core/components/design-system/Icons'
-import { currencyFormat } from '../../core/components/design-system/utils/utils'
+import type { TextSize } from '../../core/types/core.types'
+import { currencyFormat } from '../../core/utils/utils'
 import { useInvestmentsStore } from '../states/investments.state'
 import EmptyState from './EmptyState'
-
-type TextSize = 'xs' | 'sm' | 'md' | 'lg'
+import { AssetsCompositionSkeleton } from './Skeletons'
 
 interface AssetsCompositionProps {
     isLoading?: boolean
@@ -19,18 +20,17 @@ interface AssetsCompositionProps {
 
 interface AssetsCompositionListProps {
     topFiveAssets: AssetComposition[]
-    textSize: TextSize
 }
 
-const AssetsCompositionList = ({ topFiveAssets, textSize }: AssetsCompositionListProps) => {
+const AssetsCompositionList = ({ topFiveAssets }: AssetsCompositionListProps) => {
     return (
-        <ul className={`pb-4 ${textSize}`}>
+        <ul className="pb-4">
             {[...topFiveAssets]
                 .sort((a, b) => b.percentage - a.percentage)
                 .map(({ asset, percentage, amount, quantity }) => {
                     return (
                         <li className="flex items-center justify-between gap-4 py-2">
-                            <AssetIcon symbol={asset.symbol} className="w-6 h-6" />
+                            <AssetIcon symbol={asset.symbol} />
                             <div className="flex flex-col items-start flex-1 gap-0.5">
                                 <p className="capitalize">{asset.name}</p>
                                 <div className="flex items-center justify-between w-full">
@@ -72,30 +72,34 @@ const AssetsComposition = ({
     const isThereMoreThanFiveAssets = portfolio.length > 5
 
     return (
-        <Card className={`h-full w-full px-2 text-${size} ${className}`} shadow="sm" radius="sm">
-            <CardHeader className="justify-between">
-                <small className="text-default-400 text-sm capitalize">Composición</small>
-                {isThereMoreThanFiveAssets && (
-                    <section className="flex gap-2">
-                        <Button size="sm" color="default" variant="light">
-                            Ver todo
-                        </Button>
-                    </section>
-                )}
-            </CardHeader>
-            <CardBody className="gap-4 h-full">
-                {isLoading ? (
-                    <div>Loading...</div>
-                ) : !existsInvestments ? (
-                    <EmptyState
-                        title="Aún no hay activos en la cartera"
-                        description="Agregá tu primer activo para ver el detalle aquí."
-                        icon={<BarChartIcon size={40} />}
-                    />
-                ) : (
-                    <AssetsCompositionList topFiveAssets={topFiveAssets} textSize={size} />
-                )}
-            </CardBody>
+        <Card
+            className={className}
+            size={size}
+            title="Composición"
+            extra={
+                isThereMoreThanFiveAssets && (
+                    <Button size="sm" color="default" variant="light">
+                        Ver todo
+                    </Button>
+                )
+            }
+        >
+            {isLoading ? (
+                <AssetsCompositionSkeleton
+                    count={2}
+                    labelHeight="h-2"
+                    progressHeight="h-2"
+                    withAvatar
+                />
+            ) : !existsInvestments ? (
+                <EmptyState
+                    title="Aún no hay activos en la cartera"
+                    description="Agregá tu primer activo para ver el detalle aquí."
+                    icon={<BarChartIcon size={40} />}
+                />
+            ) : (
+                <AssetsCompositionList topFiveAssets={topFiveAssets} />
+            )}
         </Card>
     )
 }
