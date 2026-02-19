@@ -21,7 +21,13 @@ const INITIAL_INVESTMENTS = [
     },
 ]
 
+const INITIAL_INVESTMENT_PORTFOLIOS = [
+    { key: 1, label: 'CEDEARs', description: 'Portfolio 1 description' },
+    { key: 2, label: 'Acciones', description: 'Portfolio 2 description' },
+]
+
 export const useInvestmentsStore = create<InvestmentState>((set) => ({
+    investmentPortfolios: INITIAL_INVESTMENT_PORTFOLIOS,
     investments: INITIAL_INVESTMENTS,
 
     addInvestment: (newInvestment: Investment) =>
