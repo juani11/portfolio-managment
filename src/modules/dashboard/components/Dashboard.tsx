@@ -1,10 +1,8 @@
 import { useState } from 'react'
 
-import { ASSET_METADATA } from '../../asset/constants/assets'
 import type { TextSize } from '../../core/types/core.types'
-import { useInvestmentsStore } from '../states/investments.state'
 import Actions from './Actions'
-import AddInvestmentModal, { type FormState } from './AddInvestmentModal'
+import AddInvestmentModal from './AddInvestmentModal'
 import AssetsComposition from './AssetsComposition'
 import AssetsDistribution from './AssetsDistribution'
 import LatestInvestments from './LatestInvestments'
@@ -13,7 +11,7 @@ import PortfolioPositions from './PortfolioPostions'
 
 const Dashboard = () => {
     const withIcon = true
-    const size: TextSize = 'xs'
+    const size: TextSize = 'sm'
 
     const [loading, setLoading] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -30,28 +28,6 @@ const Dashboard = () => {
         setTimeout(() => {
             setLoading(false)
         }, 2000)
-    }
-    const addInvestment = useInvestmentsStore((state) => state.addInvestment)
-
-    const handleAddInvestment = (investmentData: FormState) => {
-        console.log('Nueva inversión:', investmentData)
-
-        // const date = formatter.format(investmentData.fechaCompra.toDate())
-        // console.log('DATE DE LA INVERSION FORMATEADA!!', date)
-
-        if (!investmentData.activo) {
-            throw new Error('Debe seleccionar un activo')
-        }
-
-        const assetObject = ASSET_METADATA[investmentData.activo]
-        addInvestment({
-            id: window.crypto.randomUUID(),
-            asset: { ...assetObject, symbol: investmentData.activo },
-            amount: Number(investmentData.precioFinal),
-            quantity: Number(investmentData.cantidad),
-            date: new Date(),
-            // date: formatter.format(investmentData.fechaCompra.toDate())
-        })
     }
 
     return (
@@ -82,7 +58,7 @@ const Dashboard = () => {
             <AddInvestmentModal
                 isOpen={isModalOpen}
                 onClose={closeAddInvestmentModal}
-                onSubmit={handleAddInvestment}
+                // onSubmit={handleAddInvestment}
             />
         </div>
     )
