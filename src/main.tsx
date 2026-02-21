@@ -8,7 +8,7 @@ import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <HeroUIProvider>
+        <HeroUIProvider locale="es-ES">
             <App />
         </HeroUIProvider>
     </StrictMode>,
