@@ -1,4 +1,5 @@
 import type { Investment } from '../../dashboard/types/investments.types'
+import { ASSET_METADATA } from '../constants/assets'
 import type { AssetComposition, AssetSymbol } from '../types/assets.types'
 
 export function groupBy<T, K extends PropertyKey>(
@@ -15,26 +16,40 @@ export function groupBy<T, K extends PropertyKey>(
     )
 }
 
+type Result = Record<AssetSymbol, { totalInvestment: number; totalQuantity: number }>
+
 export const calculateAssetsComposition = (investments: Investment[]): AssetComposition[] => {
     if (!investments?.length) return []
 
+    const result = {} as Result
+
+    let totalAssetsInvestment = 0
+
     const portfolioAssets = groupBy(investments, (investment) => investment.asset.symbol)
+    const assetsSymbols = Object.keys(portfolioAssets) as AssetSymbol[]
 
-    const assets = Object.keys(portfolioAssets)
-    const totalValue = investments.reduce((acc, inv) => acc + inv.amount, 0)
+    assetsSymbols.map((assetSymbol) => {
+        result[assetSymbol] = { totalInvestment: 0, totalQuantity: 0 }
+        portfolioAssets[assetSymbol].map((investment) => {
+            const investmentValue = investment.amount * investment.quantity
+            result[assetSymbol].totalInvestment += investmentValue
+            result[assetSymbol].totalQuantity += investment.quantity
+            totalAssetsInvestment += investmentValue
+        })
+    })
 
-    return assets.map((assetKey) => {
-        const assetInvestments = portfolioAssets[assetKey as AssetSymbol]
-        const [first] = assetInvestments
-        const { asset: completeAsset } = first
-        const assetValue = assetInvestments.reduce((acc, inv) => acc + inv.amount, 0)
-        const percentage = totalValue > 0 ? Number(((assetValue / totalValue) * 100).toFixed(2)) : 0
-
+    return Object.entries(result).map(([assetSymbol, { totalInvestment, totalQuantity }]) => {
         return {
-            asset: completeAsset,
-            amount: assetValue,
-            quantity: assetInvestments.reduce((acc, inv) => acc + inv.quantity, 0),
-            percentage,
+            asset: {
+                symbol: assetSymbol as AssetSymbol,
+                ...ASSET_METADATA[assetSymbol as AssetSymbol],
+            },
+            amount: totalInvestment,
+            quantity: totalQuantity,
+            percentage:
+                totalAssetsInvestment > 0
+                    ? Number((totalInvestment / totalAssetsInvestment) * 100).toFixed(2)
+                    : '0',
         }
     })
 }
