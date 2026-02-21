@@ -3,7 +3,7 @@ import Card from '../../core/components/design-system/Card/Card'
 const PortfolioPositions = ({ className }: { className?: string }) => {
     return (
         <Card title="Posiciones de la cartera" className={className}>
-            <div>PortfolioPositions</div>
+            <h1 className="text-xs ">PortfolioPositions</h1>
         </Card>
     )
 }

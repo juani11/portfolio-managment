@@ -34,12 +34,12 @@ const LatestInvestmentsList = ({ latestFiveInvestments, withIcon }: LatestInvest
                         <div className="flex items-center gap-4">
                             {withIcon && <AssetIcon symbol={asset.symbol} />}
                             <div className="flex flex-col items-start gap-0.5 capitalize flex-1">
-                                <p>{asset.name}</p>
-                                <p className="text-default-400">{asset.symbol}</p>
+                                <p>{asset.symbol}</p>
+                                <p className="text-default-400 ">{asset.name}</p>
                             </div>
                         </div>
                         <div className="flex flex-col items-end justify-end gap-0.5 capitalize flex-1 w-[70px]">
-                            <p className="font-bold  text-emerald-500 dark:bg-emerald-900/20 dark:text-emerald-400">
+                            <p className="font-bold  text-emerald-500 ">
                                 + {currencyFormat(amount * quantity)}
                             </p>
                             <p className="text-default-400">{dateFormat(date)}</p>
@@ -109,7 +109,8 @@ const LatestInvestments = ({
                 <EmptyState
                     title="Aún no hay inversiones"
                     description="Agregá tu primera inversión para ver el detalle aquí."
-                    icon={<PigMoneyIcon size={40} />}
+                    className="h-full"
+                    icon={<PigMoneyIcon size={36} />}
                 />
             ) : (
                 <LatestInvestmentsList

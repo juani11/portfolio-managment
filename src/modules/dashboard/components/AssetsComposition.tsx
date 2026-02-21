@@ -28,14 +28,20 @@ const AssetsCompositionList = ({ topFiveAssets }: AssetsCompositionListProps) =>
             {[...topFiveAssets]
                 .sort((a, b) => b.percentage - a.percentage)
                 .map(({ asset, percentage, amount, quantity }) => {
+                    console.log('asset', asset)
+                    console.log('percentage', percentage)
+                    console.log('amount', amount)
+                    console.log('quantity', quantity)
                     return (
-                        <li className="flex items-center justify-between gap-4 py-2">
+                        <li
+                            key={asset.symbol}
+                            className="flex items-center justify-between gap-4 py-2"
+                        >
                             <AssetIcon symbol={asset.symbol} />
                             <div className="flex flex-col items-start flex-1 gap-0.5">
-                                <p className="capitalize">{asset.name}</p>
+                                <p>{asset.symbol}</p>
                                 <div className="flex items-center justify-between w-full">
-                                    <p className="capitalize text-default-400 ">{asset.symbol}</p>
-                                    <p className="text-default-400">{percentage}%</p>
+                                    <p className="capitalize text-default-400 ">{asset.name}</p>
                                 </div>
                                 <div className="w-full h-1 bg-default-200 rounded-full relative">
                                     <div
@@ -46,10 +52,9 @@ const AssetsCompositionList = ({ topFiveAssets }: AssetsCompositionListProps) =>
                                     />
                                 </div>
                             </div>
-                            <div className="flex flex-col items-end gap-0.5 w-[80px] self-center">
-                                <p className="font-bold capitalize">
-                                    {currencyFormat(amount * quantity)}
-                                </p>
+                            <div className="flex flex-col items-end gap-0.5 w-[80px] self-end ">
+                                <p>{currencyFormat(amount)}</p>
+                                <p className="text-emerald-500">{percentage}%</p>
                             </div>
                         </li>
                     )
@@ -95,7 +100,8 @@ const AssetsComposition = ({
                 <EmptyState
                     title="Aún no hay activos en la cartera"
                     description="Agregá tu primer activo para ver el detalle aquí."
-                    icon={<BarChartIcon size={40} />}
+                    className="h-full"
+                    icon={<BarChartIcon size={36} />}
                 />
             ) : (
                 <AssetsCompositionList topFiveAssets={topFiveAssets} />

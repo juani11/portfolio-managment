@@ -10,7 +10,7 @@ type Props = React.PropsWithChildren<EmptyStateProps>
 const EmptyState = ({ className, title, description, icon, children }: Props) => {
     return (
         <div
-            className={`flex flex-col items-center justify-center gap-3 py-8 px-4 text-center ${className}`}
+            className={`flex flex-col items-center justify-center gap-3 py-8 px-4 text-center h-full ${className}`}
             role="status"
             aria-label={title}
         >

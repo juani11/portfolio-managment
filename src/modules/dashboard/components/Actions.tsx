@@ -21,7 +21,7 @@ const Actions = ({
                     ))}
                 </Select>
             </div>
-            <div className="w-1/2">
+            <div className=" w-1/2">
                 <Button
                     size="sm"
                     color="default"

@@ -10,14 +10,14 @@ import CardTitle from './CardTitle'
 interface CardProps {
     className?: string
     children: React.ReactNode
-    title: string
+    title?: string
     extra?: React.ReactNode
     size?: TextSize
 }
 
 const Card = ({ className, children, title, extra, size }: CardProps) => {
     return (
-        <CardHeroUI className={` h-full px-2 text-${size} ${className}`} shadow="sm" radius="sm">
+        <CardHeroUI className={`px-2  text-${size} ${className}`} shadow="sm" radius="sm">
             {title && (
                 <CardHeaderHeroUI className="justify-between items-start">
                     <CardTitle title={title} />
